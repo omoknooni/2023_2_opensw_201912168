@@ -1,32 +1,28 @@
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
-import telegram
-import asyncio
+from datetime import datetime
+from telegram import Update
+from telegram.ext import Application, MessageHandler, filters, ContextTypes
 
 load_dotenv()
 
-bot = telegram.Bot(token=os.getenv('TELEGRAM_TOKEN'))
-
-def gpt(prompt):
-    client = OpenAI(os.getenv('OPENAI_API_KEY'))
+async def call_gpt(update: Update, context:ContextTypes.DEFAULT_TYPE) -> None:
+    client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+    prompt = update.message.text
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role": "user", "content": prompt}
         ]
     )
-    return completion.choices[0].message.content
 
-async def main():
-    openai = OpenAI(os.getenv('OPENAI_API_KEY'))
-    chat_id = os.getenv('TELEGRAM_CHAT_ID')
-    while True:
-        message = await bot.get_updates()
-        if message:
-            prompt = message[0].message.text
-            response = gpt(prompt)
-            await bot.send_message(chat_id, response)
+    print(str(datetime.now()) + f' : {prompt}')
+    await update.message.reply_text(completion.choices[0].message.content)
+
+
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    application = Application.builder().token(os.getenv('TELEGRAM_TOKEN')).build()
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, call_gpt))
+    application.run_polling(allowed_updates=Update.ALL_TYPES)

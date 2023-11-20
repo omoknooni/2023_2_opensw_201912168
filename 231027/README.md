@@ -1,5 +1,7 @@
 # Homework #1
 ### Mask_RCNN balloon 이미지 학습
+공식 github의 Balloon 예제를 이용해 train하고 test해 객체를 인식한 결과 이미지를 뽑아냈다.
+Docker hub에서 공식으로 제공하는 Tensorflow 이미지를 이용했다. (tensorflow/tensorflow:2.2.0-gpu)
 ![result1](./mdImg/20231108_231622.png)
 ![result2](./mdImg/20231108_231632.png)
 ![result3](./mdImg/20231108_232046.png)
